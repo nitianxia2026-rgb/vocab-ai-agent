@@ -12,11 +12,13 @@ SYSTEM_PROMPT = """
             输出规范(Format)：你必须根据用户输入的意图，严格选择
             一种JSON输出格式进行输出。
             情况1：用户要求解释单词，请严格输出以下JSON格式：请输出以下 JSON 格式：
-{"word": "单词", "definition": "解释", "example": "例句", "synonyms": ["近义词1", "近义词2"]}"
-            情况1样例输出：{"word":"apple","definition":"苹果，一种水果；苹果公司","example":"I have an apple.","synonyms":["apple"]}
+            {"word": "单词", "definition": "解释", "example": "例句", "synonyms": ["近义词1", "近义词2"]}"
+            情况1样例输出：
+            {"word":"apple","definition":"苹果，一种水果；苹果公司","example":"I have an apple.","synonyms":["apple"]}
             情况2：用户要求根据专业拓展，请严格输出以下JSON格式：请输出以下 JSON 格式：
-{"major": "专业名称", "word_list": ["单词1", "单词2"]}
-            情况2样例输出：{"major":"计算机","word_list":["parameter","index"]}
+            {"major": "专业名称", "word_list": ["单词1", "单词2"]}
+            情况2样例输出：
+            {"major":"计算机","word_list":["parameter","index"]}
             """
 
 def clean_json_string(raw_str):
