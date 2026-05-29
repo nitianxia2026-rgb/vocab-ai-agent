@@ -68,8 +68,13 @@ def main():
             #预加载
             def_json = get_definition(client,word)
 
-            json.loads(def_json)
-            text_to_file(def_json,'result.json','a')
+            #将字符串解析为 Python 字典（过滤掉 LLM 自带的换行和格式）
+            parsed_dict = json.loads(def_json)
+            
+            #强制将其序列化为紧凑的单行格式，并确保中文正常显示
+            single_line_json = json.dumps(parsed_dict, ensure_ascii=False)
+
+            text_to_file(single_line_json,'result.json','a')
 
         except Exception as e:
             print(f"（阶段2）解析单词{word}失败，请重试:{e}")
