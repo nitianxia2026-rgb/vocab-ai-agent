@@ -1,0 +1,32 @@
+# ============================================================
+# Vocab-AI-Agent 项目依赖
+# ============================================================
+# 安装方式（在项目根目录执行）：
+#   pip install -r requirements.txt
+#
+# 升级已安装的依赖到指定版本：
+#   pip install --upgrade -r requirements.txt
+# ============================================================
+
+# --- 运行时依赖（项目运行必须的库）---
+
+# OpenAI SDK — 调用 DeepSeek API（DeepSeek 兼容 OpenAI 接口格式）
+# 你代码中的使用位置：config.py 第 2 行  from openai import OpenAI
+#                        services.py 中 client.chat.completions.create(...)
+openai==2.41.0
+
+# 加载 .env 环境变量文件，隔离敏感信息（API Key 等）
+# 你代码中的使用位置：config.py 第 10 行  load_dotenv()
+#                        config.py 第 12 行  os.getenv('DEEPSEEK_API_KEY')
+python-dotenv==1.2.2
+
+
+# --- 开发依赖（测试、代码检查等，日常运行不需要）---
+# 等后面加了测试和代码检查工具后，把这些取消注释并安装：
+#
+#   pytest>=8.0          # 单元测试框架
+#   ruff>=0.3            # 代码风格检查 + 自动格式化
+#   mypy>=1.8            # 类型注解检查
+#
+# 约定：开发依赖通常放在单独的 requirements-dev.txt，用这行关联：
+#   pip install -r requirements-dev.txt

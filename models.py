@@ -1,4 +1,6 @@
+import logging
 
+logger = logging.getLogger(__name__)
 
 
 class response_A(object):
@@ -8,11 +10,12 @@ class response_A(object):
         self.example = example
         self.synonyms = synonyms
     def print_response(self):
-        print(f"\n--- 单词详情 ---")
-        print(f"单词: {self.word}")
-        print(f"解释: {self.definition}")
-        print(f"例句: {self.example}")
-        print(f"近义词: {self.synonyms}")
+        logger.info("")
+        logger.info("--- 单词详情 ---")
+        logger.info("单词: %s", self.word)
+        logger.info("解释: %s", self.definition)
+        logger.info("例句: %s", self.example)
+        logger.info("近义词: %s", self.synonyms)
     
     @staticmethod
     def dict_to_response_A(d):

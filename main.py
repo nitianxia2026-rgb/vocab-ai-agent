@@ -4,28 +4,43 @@ from services import get_words,get_definition,text_to_file
 
 import os
 import json
+import logging
+
+# --- 日志配置 ---
+# 这一步只做一次，告诉 Python 的 logging 系统：
+# 1. 日志显示到什么级别（INFO 及以上都会被显示，DEBUG 不会被显示）
+# 2. 日志以什么格式显示
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)-7s | %(message)s",
+    datefmt="%H:%M:%S",
+)
+# 获取当前模块（main）专用的 logger 实例
+# __name__ 是 Python 的内置变量，在这里它的值是 "__main__"
+# 每个文件用 __name__ 做 logger 名字，方便以后定位日志来源
+logger = logging.getLogger(__name__)
 
 def main():
     
     if os.path.exists('result.json'):
         try:
             os.remove('result.json')
-            print("[system]已清理result.json")
+            logger.info("已清理 result.json")
         except PermissionError:
-            print("[system warning]无法清理result.json，请查看该文件是否被占用")
+            logger.warning("无法清理 result.json，请查看该文件是否被占用")
     try:
         client = get_client()
     except ValueError as e:
-        print(e)
+        logger.error("启动失败：%s", e)
         return 
     
     while True:#增加鲁棒性测试
         major = input("请输入您的专业（如：计算机）： ").strip()
         if not major:
-            print("[system] 专业不能为空，请重新输入。")
+            logger.warning("专业不能为空，请重新输入。")
             continue
         if major.isdigit():
-            print("[system] 专业名称不能全是数字，请输入文字（如：计科）。")
+            logger.warning("专业名称不能全是数字，请输入文字（如：计科）。")
             continue
         break 
     
@@ -36,13 +51,13 @@ def main():
             if 1 <= count <= 10:
                 break 
             else:
-                print("[system] 为了保证生成质量，个数请限制在 1-10 之间。")#用于保保护API余额，防止超时
+                logger.warning("为了保证生成质量，个数请限制在 1-10 之间。")
         else:
-            print("[system] 请输入有效的数字数字，不要输入文字或符号。")
+            logger.warning("请输入有效的数字，不要输入文字或符号。")
             
             
                 #===阶段1：获取单词列表===
-    print(f"正在请求关于{major}的{count}个专业词汇")
+    logger.info("正在请求关于 %s 的 %s 个专业词汇", major, count)
     try:
         word_list_json = get_words(client,major,count)#得到单词列表的json
         #json->实例
@@ -52,18 +67,18 @@ def main():
         
         words_to_process = b_obj.word_list
         if not words_to_process:
-            print("（阶段1）获取到的单词列表为空，请重试")   
+            logger.warning("（阶段1）获取到的单词列表为空，请重试")   
             return
         
-        print(f"获得单词列表：{(b_obj.word_list)}")
+        logger.info("获得单词列表：%s", b_obj.word_list)
     
     except Exception as e:
-        print(f"（阶段1）获取单词列表时发生错误，请重试：{e}")
+        logger.error("（阶段1）获取单词列表时发生错误，请重试：%s", e)
         return 
 
                 #===阶段2:解释单词===
     for word in words_to_process:
-        print(f"正在解析单词：{word}...")
+        logger.info("正在解析单词：%s ...", word)
         try:
             #预加载
             def_json = get_definition(client,word)
@@ -77,12 +92,12 @@ def main():
             text_to_file(single_line_json,'result.json','a')
 
         except Exception as e:
-            print(f"（阶段2）解析单词{word}失败，请重试:{e}")
+                logger.error("（阶段2）解析单词 %s 失败，请重试：%s", word, e)
 
                 #===阶段3：展示返回成果===
-    print("===生成词库完毕===")
+    logger.info("=== 生成词库完毕 ===")
     if not os.path.exists('result.json'):
-        print("[system]未生成有效数据")
+        logger.warning("未生成有效数据")
         return 
     with open('result.json','r',encoding='utf-8')as f:
         for linenum,line in enumerate(f,1):
@@ -94,7 +109,7 @@ def main():
                     a_obj = json.loads(clean_line, object_hook=response_A.dict_to_response_A)
                     a_obj.print_response()
                 except Exception as e:
-                    print(f"[system]第{linenum}行数据解析错误，请检查：{e}")
+                    logger.error("第 %s 行数据解析错误，请检查：%s", linenum, e)
 
 if __name__ == "__main__":
     main()
